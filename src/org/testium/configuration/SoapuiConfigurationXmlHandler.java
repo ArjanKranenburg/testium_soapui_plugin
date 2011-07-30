@@ -28,7 +28,7 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
 	public SoapuiConfigurationXmlHandler(XMLReader anXmlReader, RunTimeData anRtData)
 	{
 	    super(anXmlReader, START_ELEMENT);
-	    Trace.println(Trace.LEVEL.CONSTRUCTOR);
+	    Trace.println(Trace.CONSTRUCTOR);
 	    reset();
 
 		myRunTimeData = anRtData;
@@ -78,7 +78,7 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
 	@Override
 	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler)
 	{
-	    Trace.println(Trace.LEVEL.UTIL, "handleReturnFromChildElement( " + 
+	    Trace.println(Trace.UTIL, "handleReturnFromChildElement( " + 
 	    	      aQualifiedName + " )", true);
 	    
 		if (aQualifiedName.equalsIgnoreCase(CFG_TEST_EXECUTOR))

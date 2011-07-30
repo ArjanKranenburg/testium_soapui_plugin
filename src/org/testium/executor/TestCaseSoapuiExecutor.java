@@ -20,6 +20,7 @@ import org.testtoolinterfaces.testsuite.TestCase;
 import org.testtoolinterfaces.testsuite.TestCaseImpl;
 import org.testtoolinterfaces.testsuite.TestCaseLink;
 import org.testtoolinterfaces.testsuite.TestStepArrayList;
+import org.testtoolinterfaces.utils.RunTimeData;
 import org.testtoolinterfaces.utils.Trace;
 
 /**
@@ -47,12 +48,13 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 		myTestCaseResultWriter = aTestCaseResultWriter;
 	}
 
-	public TestCaseResultLink execute(TestCaseLink aTestCaseLink, File aLogDir)
+	public TestCaseResultLink execute(TestCaseLink aTestCaseLink, File aLogDir, RunTimeData anRTData)
 	{
     	String tcId = aTestCaseLink.getId();
 		Trace.println(Trace.EXEC, "execute( "
 						+ tcId + ", "
-			            + aLogDir.getPath() + " )", true );
+			            + aLogDir.getPath() + ", "
+			            + anRTData.size() + " Variables )", true );
 
 		if ( !aLogDir.isDirectory() )
 		{
@@ -68,7 +70,6 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 		File caseLogDir = new File( aLogDir, tcId );
 		caseLogDir.mkdir();
 		File resultFile = new File( caseLogDir, tcId + ".xml" );
-
 
 		TestCase testCase = new TestCaseImpl( tcId,
 		                                      new Hashtable<String, String>(),
