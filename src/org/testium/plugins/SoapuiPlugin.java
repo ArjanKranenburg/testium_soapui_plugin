@@ -2,11 +2,13 @@ package org.testium.plugins;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.testium.Testium;
 import org.testium.configuration.ConfigurationException;
 import org.testium.configuration.SoapuiConfiguration;
@@ -33,7 +35,21 @@ public final class SoapuiPlugin implements Plugin
 	public void loadPlugIn(PluginCollection aPluginCollection,
 			RunTimeData aRtData) throws ConfigurationException
 	{
+		File pluginsDir = aRtData.getValueAsFile(Testium.PLUGINSDIR);
+		File soapUILibs = new File( pluginsDir, "SoapUILibs" );
+		try
+		{
+			PluginClassLoader.addDirToClassLoader( soapUILibs );
+		}
+		catch (MalformedURLException e)
+		{
+			throw new ConfigurationException( e );
+		}
+
 		SoapuiConfiguration config = readConfigFiles( aRtData );
+		
+		File log4jFile = config.getLog4jFile();
+		PropertyConfigurator.configure( log4jFile.getAbsolutePath() );
 
 		// Executors
 		TestCaseResultWriter tcResultWriter = aPluginCollection.getTestCaseResultWriter();
@@ -51,16 +67,10 @@ public final class SoapuiPlugin implements Plugin
 		
 		File userConfigDir = (File) anRtData.getValue(Testium.USERCONFIGDIR);
 		File userConfigFile = new File( userConfigDir, "soapUI.xml" );
-		SoapuiConfiguration userConfig = new SoapuiConfiguration( null, null, null);
+		SoapuiConfiguration userConfig = new SoapuiConfiguration( null, null, null, null);
 		if ( userConfigFile.exists() )
 		{
 			userConfig = readConfigFile( userConfigFile, anRtData );
-		}
-
-		File executor = userConfig.getExecutor();
-		if (executor == null)
-		{
-			executor = globalConfig.getExecutor();
 		}
 
 		File project = userConfig.getProject();
@@ -70,12 +80,29 @@ public final class SoapuiPlugin implements Plugin
 		}
 
 		String soapInterface = userConfig.getSoapInterface();
-		if (soapInterface == null)
+		if (soapInterface == null || soapInterface.isEmpty() )
 		{
 			soapInterface = globalConfig.getSoapInterface();
 		}
 		
-		SoapuiConfiguration config = new SoapuiConfiguration( executor, project, soapInterface );
+		File soapUILibsDir = userConfig.getSoapUILibsDir();
+		if ( soapUILibsDir == null ||
+			 soapUILibsDir.equals( SoapuiConfigurationXmlHandler.getDefaultSoapUILibsDir(anRtData) ) )
+		{
+			soapUILibsDir = globalConfig.getSoapUILibsDir();
+		}
+		
+		File log4jFile = userConfig.getLog4jFile();
+		if ( log4jFile == null ||
+				log4jFile.equals( SoapuiConfigurationXmlHandler.getDefaultLog4jFile(anRtData) ) )
+		{
+			log4jFile = globalConfig.getLog4jFile();
+		}
+		
+		SoapuiConfiguration config = new SoapuiConfiguration( project,
+		                                                      soapInterface,
+		                                                      soapUILibsDir,
+		                                                      log4jFile );
 
 		return config;
 	}
@@ -118,8 +145,8 @@ public final class SoapuiPlugin implements Plugin
 			throw new ConfigurationException( e );
 		}
 		
-		SoapuiConfiguration myConfiguration = handler.getConfiguration();
+		SoapuiConfiguration configuration = handler.getConfiguration();
 		
-		return myConfiguration;
+		return configuration;
 	}
 }

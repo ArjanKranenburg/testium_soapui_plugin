@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+
+<project name="SoapUIPlugin" default="CreateJarFileWithExternalLibrary">
+
+	<target name="CreateJarFileWithExternalLibrary">
+
+		<delete file="../../../Testium_Plugins/SoapuiPlugin.jar"/>
+		<property name="version.num" value="0.2.0"/>
+	    <buildnumber file="build.num"/>
+		
+		<!--
+	    Loads entries from a manifest file.
+	    @jar     The jar from where to read
+	    @prefix  A prefix to prepend
+	    -->
+	    <macrodef name="loadmf">
+	        <attribute name="jar"/>
+	        <attribute name="prefix" default=""/>
+	        <sequential>
+	            <loadproperties>
+	                <!-- Load the manifest entries -->
+	                <zipentry zipfile="@{jar}" name="META-INF/MANIFEST.MF"/>
+	                <!-- Add the prefix -->
+	                <filterchain>
+	                    <prefixlines prefix="@{prefix}"/>
+	                </filterchain>
+	            </loadproperties>
+	        </sequential>
+	    </macrodef>
+
+<!--		<zip destfile="../../../Testium_Plugins/SoapUI_all.jar">
+		    <zipgroupfileset dir="lib" includes="*.jar"/>
+		</zip>
+-->
+		<jar destfile="../../../Testium_Plugins/SoapuiPlugin.jar" duplicate="preserve" index="true">
+			<fileset dir="src" />
+			<fileset dir="bin">
+				<exclude name="**/*Tester.class"/>
+				<exclude name="**/CmdLineTestParser.class"/>
+				<exclude name="**/testFiles/*"/>
+				<exclude name="**/testFiles"/>
+			</fileset>
+			<fileset dir=".">
+			    <include name="License_lgpl-3.0.txt"/>
+			</fileset>
+
+<!--
+		    <zipfileset src="lib/activation-1.1.jar" />
+		    <zipfileset src="lib/activeQueryBuilder-trial.jar" />
+		    <zipfileset src="lib/bcprov-jdk15-144.jar" />
+		    <zipfileset src="lib/binding-2.0.1.jar" />
+		    <zipfileset src="lib/commons-beanutils-1.7.0.jar" />
+		    <zipfileset src="lib/commons-cli-1.0.jar" />
+		    <zipfileset src="lib/commons-codec-1.3.jar" />
+		    <zipfileset src="lib/commons-collections-3.2.1.jar" />
+		    <zipfileset src="lib/commons-digester-1.7.jar" />
+		    <zipfileset src="lib/commons-httpclient-3.1.jar" />
+		    <zipfileset src="lib/commons-io-1.3.2.jar" />
+		    <zipfileset src="lib/commons-lang-2.4.jar" />
+		    <zipfileset src="lib/commons-logging-1.1.1.jar" />
+		    <zipfileset src="lib/ext-xmlbeans-1.2.jar" />
+		    <zipfileset src="lib/ezmorph-1.0.5.jar" />
+		    <zipfileset src="lib/flex-messaging-common-1.0.jar" />
+		    <zipfileset src="lib/flex-messaging-core-1.0.jar" />
+		    <zipfileset src="lib/flex-messaging-opt-1.0.jar" />
+		    <zipfileset src="lib/flex-messaging-proxy-1.0.jar" />
+		    <zipfileset src="lib/flex-messaging-remoting-1.0.jar" />
+		    <zipfileset src="lib/forms-1.0.7.jar" />
+		    <zipfileset src="lib/groovy-all-1.7.1.jar" />
+		    <zipfileset src="lib/hermes-1.14.jar" />
+		    <zipfileset src="lib/idw-1.6.1.jar" />
+		    <zipfileset src="lib/itext-2.1.7.jar" />
+		    <zipfileset src="lib/j2ee-xmlbeans-1.4.jar" />
+		    <zipfileset src="lib/jasperreports-3.7.1.jar" />
+		    <zipfileset src="lib/javamail-1.4.jar" />
+		    <zipfileset src="lib/jcalendar-1.3.2.jar" />
+		    <zipfileset src="lib/jcommon-1.0.16.jar" />
+		    <zipfileset src="lib/jetty-6.1.22.jar" />
+		    <zipfileset src="lib/jetty-util-6.1.22.jar" />
+		    <zipfileset src="lib/jfreechart-1.0.13.jar" />
+		    <zipfileset src="lib/jms-1.1.jar" />
+		    <zipfileset src="lib/jniwrap-3.7.3.jar" />
+		    <zipfileset src="lib/js-1.7R2.jar" />
+		    <zipfileset src="lib/json-lib-2.2.2-jdk15.jar" />
+		    <zipfileset src="lib/jsr173_1.0_api-xmlbeans-2.4.0.jar" />
+		    <zipfileset src="lib/jtidy-r872-jdk15.jar" />
+		    <zipfileset src="lib/junit-4.4.jar" />
+		    <zipfileset src="lib/jxbrowser-1.4.jar" />
+		    <zipfileset src="lib/jxl-2.6.12.jar" />
+		    <zipfileset src="lib/l2fprod-common-directorychooser-7.3.jar" />
+		    <zipfileset src="lib/l2fprod-common-fontchooser-7.3.jar" />
+		    <zipfileset src="lib/license4j-1.3.jar" />
+		    <zipfileset src="lib/log4j-1.2.14.jar" />
+		    <zipfileset src="lib/looks-2.2.0.jar" />
+		    <zipfileset src="lib/MozillaGlue-jxbrowser-1.4.jar" />
+		    <zipfileset src="lib/MozillaInterfaces-jxbrowser-1.4.jar" />
+		    <zipfileset src="lib/netcomponents-1.3.8a.jar" />
+		    <zipfileset src="lib/not-yet-commons-ssl-0.3.11.jar" />
+		    <zipfileset src="lib/opencsv-1.8.jar" />
+		    <zipfileset src="lib/opensaml-1.1.jar" />
+		    <zipfileset src="lib/policy-xmlbeans-1.5.jar" />
+		    <zipfileset src="lib/rsyntaxtextarea-1.3.4.jar" />
+		    <zipfileset src="lib/saxon-9.1.0.8j.jar" />
+		    <zipfileset src="lib/saxon-dom-9.1.0.8j.jar" />
+		    <zipfileset src="lib/serializer-2.7.1.jar" />
+		    <zipfileset src="lib/servlet-api-2.5-20081211.jar" />
+		    <zipfileset src="lib/soap-xmlbeans-1.2.jar" />
+		    <zipfileset src="lib/soapui-3.5.jar" />
+		    <zipfileset src="lib/soapui-coverage-xmlbeans-3.5.jar" />
+		    <zipfileset src="lib/soapui-xmlbeans-3.5.jar" />
+		    <zipfileset src="lib/swingx-soapui.jar" />
+		    <zipfileset src="lib/tuxpack-0.2.jar" />
+		    <zipfileset src="lib/wadl-xmlbeans-1.1.jar" />
+		    <zipfileset src="lib/winpack-3.7.1.jar" />
+		    <zipfileset src="lib/wsdl4j-1.6.2-fixed.jar" />
+		    <zipfileset src="lib/wss4j-1.5.8.jar" />
+		    <zipfileset src="lib/xalan-2.7.1.jar" />
+		    <zipfileset src="lib/xbean-fixed-2.4.0.jar" />
+		    <zipfileset src="lib/xbean_xpath-2.4.0.jar" />
+		    <zipfileset src="lib/xercesImpl-2.9.1.jar" />
+		    <zipfileset src="lib/xml-apis-2.9.1.jar" />
+		    <zipfileset src="lib/xmlpublic-2.4.0.jar" />
+		    <zipfileset src="lib/xmlsec-1.4.3.jar" />
+		    <zipfileset src="lib/xmlunit-1.2.jar" />
+		    <zipfileset src="lib/xom-1.1.jar" />
+		    <zipfileset src="lib/xstream-1.3.1.jar" />			
+-->			
+			<manifest>
+		        <attribute name="Created-By" value="Testium.org"/>
+		        <attribute name="Built-By" value="${user.name}"/>
+		        <attribute name="Implementation-Title" value="SoapUI Plugin" />
+		        <attribute name="Implementation-Version" value="${version.num}.${build.number}"/> 
+		        <attribute name="Implementation-Vendor" value="Open Source - Arjan Kranenburg" />
+		    </manifest>
+		</jar>
+		
+		<delete file="MANIFEST.MF"/>
+	</target>
+</project>

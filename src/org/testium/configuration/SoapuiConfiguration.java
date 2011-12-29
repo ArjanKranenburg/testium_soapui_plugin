@@ -13,32 +13,35 @@ import org.testtoolinterfaces.utils.Trace;
  */
 public class SoapuiConfiguration
 {
-	private File myExecutor;
 	private File myProject;
 	private String mySoapInterface;
+	private File mySoapUILibsDir;
+	private File myLog4jFile;
 
 	/**
 	 * @param aSoapuiExecutable
 	 * @param aSoapuiProject
 	 */
-	public SoapuiConfiguration( File aSoapuiExecutable,
+	public SoapuiConfiguration( //File aSoapuiExecutable,
 							    File aSoapuiProject,
-							    String aSoapInterface )
+							    String aSoapInterface,
+							    File aSoapUILibsDir,
+							    File aLog4jFile )
 	{
 	    Trace.println(Trace.CONSTRUCTOR);
 
-	    myExecutor = aSoapuiExecutable;
 	    myProject = aSoapuiProject;
 	    mySoapInterface = aSoapInterface;
+	    mySoapUILibsDir = aSoapUILibsDir;
+	    myLog4jFile = aLog4jFile;
 	}
 
 	/**
-	 * @return the SoapUI Test Executor
+	 * @return the soapUILibsDir
 	 */
-	public File getExecutor()
+	public File getSoapUILibsDir()
 	{
-	    Trace.println(Trace.GETTER);
-		return myExecutor;
+		return mySoapUILibsDir;
 	}
 
 	/**
@@ -57,5 +60,14 @@ public class SoapuiConfiguration
 	{
 	    Trace.println(Trace.GETTER);
 		return mySoapInterface;
+	}
+
+	/**
+	 * @return the Log4j File
+	 */
+	public File getLog4jFile()
+	{
+	    Trace.println(Trace.GETTER);
+		return myLog4jFile;
 	}
 }
