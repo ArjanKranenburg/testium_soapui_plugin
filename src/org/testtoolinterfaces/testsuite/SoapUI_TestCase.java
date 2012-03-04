@@ -18,12 +18,13 @@ public class SoapUI_TestCase extends TestCaseImpl
 	public SoapUI_TestCase( WsdlTestCase aSoapUI_TestCase )
 	{
 		super( aSoapUI_TestCase.getName(),
-		       new Hashtable<String, String>(),
 		       aSoapUI_TestCase.getDescription(),
+		       0,
 		       new ArrayList<String>(),
-		       new TestStepArrayList(),
-		       new TestStepArrayList(),
-		       new TestStepArrayList(),
+		       new TestStepSequence(),
+		       new TestStepSequence(),
+		       new TestStepSequence(),
+		       new Hashtable<String, String>(),
 		       new Hashtable<String, String>() );
 		
 		mySoapUITestCase = aSoapUI_TestCase;

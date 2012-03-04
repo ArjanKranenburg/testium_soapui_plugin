@@ -44,8 +44,7 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
 
 	    for (XmlHandler handler : xmlHandlers)
 	    {
-			this.addStartElementHandler(handler.getStartElement(), handler);
-			handler.addEndElementHandler(handler.getStartElement(), this);
+			this.addElementHandler(handler.getStartElement(), handler);
 	    }
 	}
 
@@ -85,20 +84,26 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
 	    Trace.println(Trace.UTIL, "handleReturnFromChildElement( " + 
 	    	      aQualifiedName + " )", true);
 	    
+	    if ( ! aChildXmlHandler.getClass().equals(GenericTagAndStringXmlHandler.class) )
+		{
+			throw new Error( "ChildXmlHandler (" + aChildXmlHandler.getClass().toString() + ") must be of type GenericTagAndStringXmlHandler" );
+		}
+		GenericTagAndStringXmlHandler childXmlHandler = (GenericTagAndStringXmlHandler) aChildXmlHandler;
+
 		if (aQualifiedName.equalsIgnoreCase(CFG_PROJECT))
     	{
-			String projectName = myRunTimeData.substituteVars( aChildXmlHandler.getValue() );
+			String projectName = myRunTimeData.substituteVars( childXmlHandler.getValue() );
 			myProject = new File( projectName );
 			aChildXmlHandler.reset();
     	}
 		else if (aQualifiedName.equalsIgnoreCase(CFG_SOAP_INTERFACE))
     	{
-			mySoapInterface = myRunTimeData.substituteVars( aChildXmlHandler.getValue() );
+			mySoapInterface = myRunTimeData.substituteVars( childXmlHandler.getValue() );
 			aChildXmlHandler.reset();
     	}
 		else if (aQualifiedName.equalsIgnoreCase(CFG_SOAPUI_LIBS_DIR))
     	{
-			String SoapUILibsDirName = aChildXmlHandler.getValue();
+			String SoapUILibsDirName = childXmlHandler.getValue();
 			SoapUILibsDirName = myRunTimeData.substituteVars(SoapUILibsDirName);
 			mySoapUILibsDir = new File( SoapUILibsDirName );
 
@@ -106,7 +111,7 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
     	}
 		else if (aQualifiedName.equalsIgnoreCase(CFG_LOG4J_FILE))
     	{
-			String log4jFileName = aChildXmlHandler.getValue();
+			String log4jFileName = childXmlHandler.getValue();
 			log4jFileName = myRunTimeData.substituteVars(log4jFileName);
 			myLog4jFile = new File( log4jFileName );
 
