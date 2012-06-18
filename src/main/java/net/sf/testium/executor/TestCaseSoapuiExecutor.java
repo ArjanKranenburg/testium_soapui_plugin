@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.testium.executor;
+package net.sf.testium.executor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,14 +12,15 @@ import java.io.PrintStream;
 //import java.util.Hashtable;
 import java.util.List;
 
-import org.testium.configuration.SoapuiConfiguration;
+import net.sf.testium.configuration.SoapuiConfiguration;
+import net.sf.testtoolinterfaces.testsuite.SoapUI_TestCase;
+
 import org.testtoolinterfaces.testresult.TestCaseResult;
 import org.testtoolinterfaces.testresult.TestCaseResultLink;
 import org.testtoolinterfaces.testresult.TestResult.VERDICT;
 import org.testtoolinterfaces.testresultinterface.TestCaseResultWriter;
 //import org.testtoolinterfaces.testsuite.Parameter;
 //import org.testtoolinterfaces.testsuite.ParameterArrayList;
-import org.testtoolinterfaces.testsuite.SoapUI_TestCase;
 import org.testtoolinterfaces.testsuite.TestSuiteException;
 //import org.testtoolinterfaces.testsuite.TestCase;
 //import org.testtoolinterfaces.testsuite.TestCaseImpl;

@@ -1,7 +1,10 @@
-package org.testtoolinterfaces.testsuite;
+package net.sf.testtoolinterfaces.testsuite;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import org.testtoolinterfaces.testsuite.TestCaseImpl;
+import org.testtoolinterfaces.testsuite.TestStepSequence;
 
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 

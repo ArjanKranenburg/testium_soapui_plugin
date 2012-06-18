@@ -1,9 +1,9 @@
-package org.testium.configuration;
+package net.sf.testium.configuration;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import org.testium.Testium;
+import net.sf.testium.Testium;
 import org.testtoolinterfaces.utils.GenericTagAndStringXmlHandler;
 import org.testtoolinterfaces.utils.RunTimeData;
 import org.testtoolinterfaces.utils.Trace;

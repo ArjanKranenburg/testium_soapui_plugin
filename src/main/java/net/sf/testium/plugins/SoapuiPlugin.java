@@ -1,4 +1,4 @@
-package org.testium.plugins;
+package net.sf.testium.plugins;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.testium.Testium;
-import org.testium.configuration.ConfigurationException;
-import org.testium.configuration.SoapuiConfiguration;
-import org.testium.configuration.SoapuiConfigurationXmlHandler;
-import org.testium.executor.TestCaseSoapuiExecutor;
+import net.sf.testium.Testium;
+import net.sf.testium.configuration.ConfigurationException;
+import net.sf.testium.configuration.SoapuiConfiguration;
+import net.sf.testium.configuration.SoapuiConfigurationXmlHandler;
+import net.sf.testium.executor.TestCaseSoapuiExecutor;
 import org.testtoolinterfaces.testresultinterface.TestCaseResultWriter;
 import org.testtoolinterfaces.utils.RunTimeData;
 import org.testtoolinterfaces.utils.Trace;

@@ -1,4 +1,4 @@
-package org.testium.executor.soapui;
+package net.sf.testium.executor.soapui;
 
 /**
  * 
