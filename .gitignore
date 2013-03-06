@@ -1,0 +1,4 @@
+.classpath
+/target
+pom.xml.asc
+release.properties

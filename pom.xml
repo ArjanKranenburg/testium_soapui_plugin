@@ -5,7 +5,14 @@
   <version>0.3.4-SNAPSHOT</version>
   <name>Testium SoapUI Plugin</name>
   <description>SoapUI Plugin for the Testium Executor</description>
-  <url>http://testium.sourceforge.net/</url>
+  <url>http://testium.sf.net/</url>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
 
   <licenses>
     <license>
@@ -14,6 +21,20 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:ArjanKranenburg/testium_soapui_plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:ArjanKranenburg/testium_soapui_plugin.git</developerConnection>
+    <url>git@github.com:ArjanKranenburg/testium_soapui_plugin.git</url>
+  </scm>
+ 
+  <developers>
+    <developer>
+      <id>arjankranenburg</id>
+      <name>Arjan Kranenburg</name>
+      <email>Arjan.Kranenburg@gmail.com</email>
+    </developer>
+  </developers>
 
   <dependencies>
   	<dependency>
@@ -105,4 +126,34 @@
 	  </plugin>
     </plugins>
   </build>
+
+  <profiles>
+	  <profile>
+	    <id>release-sign-artifacts</id>
+	    <activation>
+	      <property>
+	        <name>performRelease</name>
+	        <value>true</value>
+	      </property>
+	    </activation>
+	    <build>
+	      <plugins>
+	        <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-gpg-plugin</artifactId>
+	          <version>1.1</version>
+	          <executions>
+	            <execution>
+	              <id>sign-artifacts</id>
+	              <phase>verify</phase>
+	              <goals>
+	                <goal>sign</goal>
+	              </goals>
+	            </execution>
+	          </executions>
+	        </plugin>
+	      </plugins>
+	    </build>
+	  </profile>
+	</profiles>
 </project>
