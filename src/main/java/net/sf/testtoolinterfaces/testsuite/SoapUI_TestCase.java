@@ -1,7 +1,6 @@
 package net.sf.testtoolinterfaces.testsuite;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import org.testtoolinterfaces.testsuite.TestCaseImpl;
 import org.testtoolinterfaces.testsuite.TestStepSequence;
@@ -27,9 +26,7 @@ public class SoapUI_TestCase extends TestCaseImpl
 		       new ArrayList<String>(),
 		       new TestStepSequence(),
 		       new TestStepSequence(),
-		       new TestStepSequence(),
-		       new Hashtable<String, String>(),
-		       new Hashtable<String, String>() );
+		       new TestStepSequence() );
 		
 		mySoapUITestCase = aSoapUI_TestCase;
 	}
