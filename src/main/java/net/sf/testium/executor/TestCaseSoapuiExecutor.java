@@ -8,8 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOError;
 import java.io.PrintStream;
-//import java.util.ArrayList;
-//import java.util.Hashtable;
 import java.util.List;
 
 import net.sf.testium.configuration.SoapuiConfiguration;
@@ -18,19 +16,15 @@ import net.sf.testtoolinterfaces.testsuite.SoapUI_TestCase;
 import org.testtoolinterfaces.testresult.TestCaseResult;
 import org.testtoolinterfaces.testresult.TestCaseResultLink;
 import org.testtoolinterfaces.testresult.TestResult.VERDICT;
+import org.testtoolinterfaces.testresult.impl.TestCaseResultImpl;
+import org.testtoolinterfaces.testresult.impl.TestCaseResultLinkImpl;
 import org.testtoolinterfaces.testresultinterface.TestCaseResultWriter;
-//import org.testtoolinterfaces.testsuite.Parameter;
-//import org.testtoolinterfaces.testsuite.ParameterArrayList;
-import org.testtoolinterfaces.testsuite.TestSuiteException;
-//import org.testtoolinterfaces.testsuite.TestCase;
-//import org.testtoolinterfaces.testsuite.TestCaseImpl;
 import org.testtoolinterfaces.testsuite.TestCaseLink;
-//import org.testtoolinterfaces.testsuite.TestStepArrayList;
+import org.testtoolinterfaces.testsuite.TestSuiteException;
 import org.testtoolinterfaces.utils.RunTimeData;
 import org.testtoolinterfaces.utils.Trace;
 import org.testtoolinterfaces.utils.Trace.LEVEL;
 
-import com.eviware.soapui.SoapUI;
 import com.eviware.soapui.impl.support.http.HttpRequestTestStep;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.WsdlProjectPro;
@@ -38,9 +32,9 @@ import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlRunTestCaseTestStep;
 import com.eviware.soapui.model.support.PropertiesMap;
 import com.eviware.soapui.model.testsuite.TestRunner;
+import com.eviware.soapui.model.testsuite.TestRunner.Status;
 import com.eviware.soapui.model.testsuite.TestStep;
 import com.eviware.soapui.model.testsuite.TestSuite;
-import com.eviware.soapui.model.testsuite.TestRunner.Status;
 
 /**
  * @author Arjan Kranenburg
@@ -96,7 +90,7 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 
 		SoapUI_TestCase tc = getTestCase( aTestCaseLink, caseLogDir );
 
-		TestCaseResult result = new TestCaseResult( tc );
+		TestCaseResult result = new TestCaseResultImpl( tc );
 		myTestCaseResultWriter.write( result, resultFile );
 
 		// create empty properties and run synchronously
@@ -127,7 +121,7 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 			result.addTestLog("soapui", logFile.getPath());
 		}
 
-		return new TestCaseResultLink( aTestCaseLink,
+		return new TestCaseResultLinkImpl( aTestCaseLink,
 		                               result.getResult(),
 		                               resultFile );
 	}

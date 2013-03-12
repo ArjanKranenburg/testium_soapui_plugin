@@ -46,8 +46,29 @@
   	<dependency>
   	  <groupId>net.sf.testium</groupId>
   	  <artifactId>testium</artifactId>
-  	  <version>0.3.26</version>
+  	  <version>0.3.28</version>
   	</dependency>
+  	<dependency>
+  	  <groupId>net.sf.testium</groupId>
+  	  <artifactId>testium</artifactId>
+  	  <version>0.3.28</version>
+  	</dependency>
+  	<dependency>
+  	  <groupId>org.testtoolinterfaces</groupId>
+  	  <artifactId>utils</artifactId>
+  	  <version>0.1.7</version>
+  	</dependency>
+  	<dependency>
+  	  <groupId>org.testtoolinterfaces</groupId>
+  	  <artifactId>testsuite</artifactId>
+  	  <version>0.3.10</version>
+  	</dependency>
+  	<dependency>
+  	  <groupId>org.testtoolinterfaces</groupId>
+  	  <artifactId>testresult</artifactId>
+  	  <version>0.3.13</version>
+  	</dependency>
+
    	<dependency>
       <groupId>eviware</groupId>
       <artifactId>soapui</artifactId>
