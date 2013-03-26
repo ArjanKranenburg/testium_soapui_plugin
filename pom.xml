@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.testium</groupId>
-  <artifactId>soapui-plugin</artifactId>
+  <artifactId>testium-soapui-plugin</artifactId>
   <version>0.3.6-SNAPSHOT</version>
   <name>Testium SoapUI Plugin</name>
   <description>SoapUI Plugin for the Testium Executor</description>
@@ -49,11 +49,6 @@
   	  <version>0.3.28</version>
   	</dependency>
   	<dependency>
-  	  <groupId>net.sf.testium</groupId>
-  	  <artifactId>testium</artifactId>
-  	  <version>0.3.28</version>
-  	</dependency>
-  	<dependency>
   	  <groupId>org.testtoolinterfaces</groupId>
   	  <artifactId>utils</artifactId>
   	  <version>0.1.7</version>
@@ -93,6 +88,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.6.4</version>
+  	</dependency>
+   	<dependency>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <version>2.6.0</version>
   	</dependency>
 <!--
    	<dependency>

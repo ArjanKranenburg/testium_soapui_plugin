@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOError;
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.testium.configuration.SoapuiConfiguration;
@@ -27,10 +28,11 @@ import org.testtoolinterfaces.utils.Trace.LEVEL;
 
 import com.eviware.soapui.impl.support.http.HttpRequestTestStep;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
-import com.eviware.soapui.impl.wsdl.WsdlProjectPro;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlRunTestCaseTestStep;
+import com.eviware.soapui.model.ModelItem;
 import com.eviware.soapui.model.support.PropertiesMap;
+import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestRunner;
 import com.eviware.soapui.model.testsuite.TestRunner.Status;
 import com.eviware.soapui.model.testsuite.TestStep;
@@ -68,62 +70,72 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 	public TestCaseResultLink execute(TestCaseLink aTestCaseLink, File aLogDir, RunTimeData anRTData)
 						      throws TestCaseLinkExecutionException
 	{
-    	String tcId = aTestCaseLink.getId();
-		Trace.println(Trace.EXEC, "execute( "
-						+ tcId + ", "
-			            + aLogDir.getPath() + ", "
-			            + anRTData.size() + " Variables )", true );
+    	try {
+			String tcId = aTestCaseLink.getId();
+			Trace.println(Trace.EXEC, "execute( "
+							+ tcId + ", "
+				            + aLogDir.getPath() + ", "
+				            + anRTData.size() + " Variables )", true );
 
-		if ( !aLogDir.isDirectory() )
-		{
-			FileNotFoundException exc = new FileNotFoundException("Directory does not exist: " + aLogDir.getAbsolutePath());
-			throw new IOError( exc );
+System.out.println( "Executing SoapUI TC: " + tcId );
+			if ( !aLogDir.isDirectory() )
+			{
+				FileNotFoundException exc = new FileNotFoundException("Directory does not exist: " + aLogDir.getAbsolutePath());
+				throw new IOError( exc );
+			}
+
+			File caseLogDir = new File( aLogDir, tcId );
+			caseLogDir.mkdir();
+			File resultFile = new File( caseLogDir, tcId + ".xml" );
+
+			// StdOut is redirected because SoapUI outputs lots of garbage
+			File logFile  = new File( caseLogDir, "soapui.log" );
+			redirectStdOut(logFile);
+			
+			SoapUI_TestCase tc = getTestCase( aTestCaseLink, caseLogDir );
+
+			TestCaseResult result = new TestCaseResultImpl( tc );
+			myTestCaseResultWriter.write( result, resultFile );
+
+			// create empty properties and run synchronously
+			PropertiesMap soapUiProperties = new PropertiesMap();
+			
+			TestRunner runner = tc.getSoapUI_TC().run( soapUiProperties, false ); // boolean is for async running
+			
+			resetStdOut();
+			if ( runner.getStatus().equals( Status.FAILED ) )
+			{
+				result.setResult( VERDICT.FAILED );
+				runner.getReason();
+				result.addComment("Test Case Failed: " + runner.getReason());
+			}
+			else if ( runner.getStatus().equals( Status.FINISHED ) )
+			{
+				result.setResult( VERDICT.PASSED );			
+			}
+			else
+			{
+				result.setResult( VERDICT.ERROR );
+				runner.getReason();
+				result.addComment("Test Case Failed: " + runner.getReason());
+			}
+
+			if ( logFile.length() > 0 )
+			{
+				result.addTestLog("soapui", logFile.getPath());
+			}
+
+			return new TestCaseResultLinkImpl( aTestCaseLink,
+			                               result.getResult(),
+			                               resultFile );
+		} catch (Throwable t) {
+			resetStdOut();
+			t.printStackTrace();
+
+			return new TestCaseResultLinkImpl( aTestCaseLink,
+                    VERDICT.ERROR,
+                    null );
 		}
-
-		File caseLogDir = new File( aLogDir, tcId );
-		caseLogDir.mkdir();
-		File resultFile = new File( caseLogDir, tcId + ".xml" );
-
-		// StdOut is redirected because SoapUI outputs lots of garbage
-		File logFile  = new File( caseLogDir, "soapui.log" );
-		redirectStdOut(logFile);
-
-		SoapUI_TestCase tc = getTestCase( aTestCaseLink, caseLogDir );
-
-		TestCaseResult result = new TestCaseResultImpl( tc );
-		myTestCaseResultWriter.write( result, resultFile );
-
-		// create empty properties and run synchronously
-		PropertiesMap soapUiProperties = new PropertiesMap();
-		
-		TestRunner runner = tc.getSoapUI_TC().run( soapUiProperties, false ); // boolean is for async running
-		
-		resetStdOut();
-		if ( runner.getStatus().equals( Status.FAILED ) )
-		{
-			result.setResult( VERDICT.FAILED );
-			runner.getReason();
-			result.addComment("Test Case Failed: " + runner.getReason());
-		}
-		else if ( runner.getStatus().equals( Status.FINISHED ) )
-		{
-			result.setResult( VERDICT.PASSED );			
-		}
-		else
-		{
-			result.setResult( VERDICT.ERROR );
-			runner.getReason();
-			result.addComment("Test Case Failed: " + runner.getReason());
-		}
-
-		if ( logFile.length() > 0 )
-		{
-			result.addTestLog("soapui", logFile.getPath());
-		}
-
-		return new TestCaseResultLinkImpl( aTestCaseLink,
-		                               result.getResult(),
-		                               resultFile );
 	}
 
 	/**
@@ -164,29 +176,45 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 		}
 	}
 
-	public SoapUI_TestCase getTestCase( TestCaseLink aTestCaseLink,
+	private SoapUI_TestCase getTestCase( TestCaseLink aTestCaseLink,
 	                                    File aLogDir )
 						   throws TestCaseLinkExecutionException
 	{
     	String tcId = aTestCaseLink.getId();
-		Trace.println(Trace.EXEC, "execute( " + tcId + " )", true );
+		Trace.println(Trace.EXEC, "getTestCase( " + tcId + " )", true );
 
 		WsdlProject project;
 		try
 		{
 			project = getProject( aLogDir );
 		}
-		catch (TestSuiteException e)
+		catch (Throwable t)
 		{
-			throw new TestCaseLinkExecutionException( aTestCaseLink, e );
+			resetStdOut();
+			throw new TestCaseLinkExecutionException( aTestCaseLink, t );
 		}
 
 		TestSuite testSuite = project.getTestSuiteByName( aTestCaseLink.getLink().getName() );
+		if ( testSuite == null ) {
+			throw new TestCaseLinkExecutionException( aTestCaseLink, "SoapUI TestSuite not found: " + aTestCaseLink.getLink().getName() );
+		}
+myNormalOutStream.println( "TestSuite " + testSuite.getName() + " loaded with " + testSuite.getTestCaseCount() + " TestCases." );
+Iterator<TestCase> testCasesItr = testSuite.getTestCaseList().iterator();
+while ( testCasesItr.hasNext() ) {
+	myNormalOutStream.println( " | " + testCasesItr.next().getName() );
+}
+
 		WsdlTestCase testCase = (WsdlTestCase) testSuite.getTestCaseByName( tcId );
+		if ( testCase == null ) {
+			throw new TestCaseLinkExecutionException( aTestCaseLink, "SoapUI TestCase not found: " + tcId );
+		}
+myNormalOutStream.println( "Check 3: " + testCase.getName() );
 
 		setEndPoints(testCase);
+myNormalOutStream.println( "Check 4" );
 
 		SoapUI_TestCase soapUI_TC = new SoapUI_TestCase( testCase );
+myNormalOutStream.println( "Check 5" );
 
 		return soapUI_TC;
 	}
@@ -196,9 +224,11 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 	 */
 	private void setEndPoints(WsdlTestCase aTestCase)
 	{
+myNormalOutStream.println("Setting end-points for " + aTestCase.getName());
 		List<TestStep> testSteps = aTestCase.getTestStepList();
 		for( TestStep testStep : testSteps )
 		{
+myNormalOutStream.println("Setting end-points for " + testStep.getName());
 			if ( HttpRequestTestStep.class.isInstance( testStep ) )
 			{
 				HttpRequestTestStep httpRequestTS = (HttpRequestTestStep) testStep;
@@ -220,17 +250,18 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 		{
 			try
 			{
-				soapUiProject = new WsdlProjectPro( myConfiguration.getProject().getAbsolutePath() );
+//				soapUiProject = new WsdlProjectPro( myConfiguration.getProject().getAbsolutePath() );
+				soapUiProject = new WsdlProject( myConfiguration.getProject().getAbsolutePath() );
 //				soapUiProject.setResourceRoot(aLogDir.getAbsolutePath());
 			}
 			catch (Exception e)
 			{
-				throw new TestSuiteException( e.getMessage() );
+				throw new TestSuiteException( "SoapUI project not found: " + myConfiguration.getProject().getName(), e );
 			}
 		}
 
 		soapUiProject.setResourceRoot( aLogDir.getAbsolutePath() );
-		
+
 		return soapUiProject;
 	}
 
