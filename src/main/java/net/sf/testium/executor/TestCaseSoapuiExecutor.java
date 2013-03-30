@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOError;
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.List;
 
 import net.sf.testium.configuration.SoapuiConfiguration;
@@ -30,9 +29,8 @@ import com.eviware.soapui.impl.support.http.HttpRequestTestStep;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlRunTestCaseTestStep;
-import com.eviware.soapui.model.ModelItem;
+import com.eviware.soapui.model.project.Project;
 import com.eviware.soapui.model.support.PropertiesMap;
-import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestRunner;
 import com.eviware.soapui.model.testsuite.TestRunner.Status;
 import com.eviware.soapui.model.testsuite.TestStep;
@@ -49,7 +47,7 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 	private SoapuiConfiguration myConfiguration;
 	private TestCaseResultWriter myTestCaseResultWriter;
 	
-	private WsdlProject soapUiProject = null;
+	private Project soapUiProject = null;
 	private PrintStream myNormalOutStream = System.out;
 	private PrintStream myNormalErrStream = System.err;
 	
@@ -77,7 +75,6 @@ public class TestCaseSoapuiExecutor implements TestCaseExecutor
 				            + aLogDir.getPath() + ", "
 				            + anRTData.size() + " Variables )", true );
 
-System.out.println( "Executing SoapUI TC: " + tcId );
 			if ( !aLogDir.isDirectory() )
 			{
 				FileNotFoundException exc = new FileNotFoundException("Directory does not exist: " + aLogDir.getAbsolutePath());
@@ -183,7 +180,7 @@ System.out.println( "Executing SoapUI TC: " + tcId );
     	String tcId = aTestCaseLink.getId();
 		Trace.println(Trace.EXEC, "getTestCase( " + tcId + " )", true );
 
-		WsdlProject project;
+		Project project;
 		try
 		{
 			project = getProject( aLogDir );
@@ -198,23 +195,15 @@ System.out.println( "Executing SoapUI TC: " + tcId );
 		if ( testSuite == null ) {
 			throw new TestCaseLinkExecutionException( aTestCaseLink, "SoapUI TestSuite not found: " + aTestCaseLink.getLink().getName() );
 		}
-myNormalOutStream.println( "TestSuite " + testSuite.getName() + " loaded with " + testSuite.getTestCaseCount() + " TestCases." );
-Iterator<TestCase> testCasesItr = testSuite.getTestCaseList().iterator();
-while ( testCasesItr.hasNext() ) {
-	myNormalOutStream.println( " | " + testCasesItr.next().getName() );
-}
 
 		WsdlTestCase testCase = (WsdlTestCase) testSuite.getTestCaseByName( tcId );
 		if ( testCase == null ) {
 			throw new TestCaseLinkExecutionException( aTestCaseLink, "SoapUI TestCase not found: " + tcId );
 		}
-myNormalOutStream.println( "Check 3: " + testCase.getName() );
 
 		setEndPoints(testCase);
-myNormalOutStream.println( "Check 4" );
 
 		SoapUI_TestCase soapUI_TC = new SoapUI_TestCase( testCase );
-myNormalOutStream.println( "Check 5" );
 
 		return soapUI_TC;
 	}
@@ -224,11 +213,9 @@ myNormalOutStream.println( "Check 5" );
 	 */
 	private void setEndPoints(WsdlTestCase aTestCase)
 	{
-myNormalOutStream.println("Setting end-points for " + aTestCase.getName());
 		List<TestStep> testSteps = aTestCase.getTestStepList();
 		for( TestStep testStep : testSteps )
 		{
-myNormalOutStream.println("Setting end-points for " + testStep.getName());
 			if ( HttpRequestTestStep.class.isInstance( testStep ) )
 			{
 				HttpRequestTestStep httpRequestTS = (HttpRequestTestStep) testStep;
@@ -244,7 +231,7 @@ myNormalOutStream.println("Setting end-points for " + testStep.getName());
 		}
 	}
 
-	private WsdlProject getProject( File aLogDir ) throws TestSuiteException
+	private Project getProject( File aLogDir ) throws TestSuiteException
 	{
 		if ( soapUiProject == null )
 		{
@@ -260,7 +247,9 @@ myNormalOutStream.println("Setting end-points for " + testStep.getName());
 			}
 		}
 
-		soapUiProject.setResourceRoot( aLogDir.getAbsolutePath() );
+		if ( soapUiProject instanceof WsdlProject ) {
+			((WsdlProject) soapUiProject).setResourceRoot( aLogDir.getAbsolutePath() );
+		}
 
 		return soapUiProject;
 	}

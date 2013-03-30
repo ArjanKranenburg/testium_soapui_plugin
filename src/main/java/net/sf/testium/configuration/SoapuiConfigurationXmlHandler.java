@@ -44,7 +44,7 @@ public class SoapuiConfigurationXmlHandler extends XmlHandler
 
 	    for (XmlHandler handler : xmlHandlers)
 	    {
-			this.addElementHandler(handler.getStartElement(), handler);
+			this.addElementHandler(handler);
 	    }
 	}
 
